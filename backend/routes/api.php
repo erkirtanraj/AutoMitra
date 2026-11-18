@@ -13,7 +13,10 @@ Route::prefix('v1')->group(function (): void {
 
         Route::middleware('auth:sanctum')->group(function (): void {
             Route::get('/me', [AuthController::class, 'me']);
-            Route::post('/logout', [AuthController::class, 'logout']);\n            Route::get('/admin/access-check', fn () => response()->json(['status' => 'authorized']))\n                ->middleware('role:admin');
+            Route::post('/logout', [AuthController::class, 'logout']);
         });
     });
+
+    Route::get('/admin/access-check', fn () => response()->json(['status' => 'authorized']))
+        ->middleware(['auth:sanctum', 'role:admin']);
 });
