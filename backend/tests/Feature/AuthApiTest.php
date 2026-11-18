@@ -40,6 +40,7 @@ class AuthApiTest extends TestCase
         ])->assertOk();
 
         $token = $login->json('token');
+        $tokenId = (int) explode('|', $token, 2)[0];
 
         $this->withToken($token)
             ->getJson('/api/v1/auth/me')
@@ -49,6 +50,11 @@ class AuthApiTest extends TestCase
         $this->withToken($token)
             ->postJson('/api/v1/auth/logout')
             ->assertOk();
+
+        $this->assertDatabaseMissing('personal_access_tokens', ['id' => $tokenId]);
+
+        // Start a fresh guard resolution to model the next HTTP request.
+        $this->app['auth']->forgetGuards();
 
         $this->withToken($token)
             ->getJson('/api/v1/auth/me')
